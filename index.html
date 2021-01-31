@@ -44,7 +44,7 @@
 	<div id="footer" class="container-fluid text-center">
 		This is an experimental tool designed to extract the mp4 video link for Kaltura hosted videos (it looks for open graph tags <code>og:video</code>) needed for use in H5P authoring. This serves as a replacement for <a href="https://docs.google.com/spreadsheets/d/14ySEWOF-wA--O5BkObP0mfimhsCkjpR6t7jYTFEOmuU/copy" target="_blank">the original Google Sheets version</a>. Sloppy quick code by <a href="http://cog.dog/"> @cogdog</a> and  <a href="https://github.com/cogdog/mp4fetcher">available for forking</a><br /><br />
 		<!-- background image attribution -->
-Image Credit: A cropped portion of <a href="https://pixabay.com/photos/vintage-tv-tv-old-transistor-1116587/" target="_blank">Pixabay image</a> by <a href="https://pixabay.com/users/makamuki0-1102736/">Marc Pascual</a> edited by Alan Levine to replace labels of theTV knobs.
+Image Credit: A cropped portion of <a href="https://pixabay.com/photos/vintage-tv-tv-old-transistor-1116587/" target="_blank">Pixabay image</a> by <a href="https://pixabay.com/users/makamuki0-1102736/">Marc Pascual</a> edited by Alan Levine to replace labels of the TV knobs.
 			<!-- code credit, thanks for keeping -->
 	</div>
 	
@@ -104,7 +104,7 @@ Image Credit: A cropped portion of <a href="https://pixabay.com/photos/vintage-t
 
 			function get_template_html() {
 				// template for success results
-				return ('<form><h2>Results</h2> <p><strong>Video:</strong> <span id="ktitle"></span></p> <p><strong>MP4 address:</strong> Click to select web address, then copy, and use in H5P for video from "other source URL"</p> <input type="text" id="kurl" class="kres"><p><strong>Poster Image:</strong> Save to use as a poster image (right/command click, use "Save image as")</p> <img src="" id="kposter"></p></form>');
+				return ('<form><h2>Results</h2> <p><strong>Video:</strong> <span id="ktitle"></span></p> <p><strong>MP4 address:</strong> Click to select web address, then copy, and use in H5P for video from "other source URL"</p> <input type="text" id="kurl" class="kres" onClick="select()"><p><strong>Poster Image:</strong> Save to use as a poster image (right/command click, use "Save image as")</p> <img src="" id="kposter"></p></form>');
 
 			}
 
@@ -117,11 +117,11 @@ Image Credit: A cropped portion of <a href="https://pixabay.com/photos/vintage-t
 			});
 
 			// make the results field one click selectable
-			$("#kresults input[type='text']").click( function () {
+			$("#kurl").click( function() {
 			   $(this).select();
 			});
 
-			$( "#gimme" ).click(function() {
+			$("#gimme").click(function() {
 				// hide results display, start the loader animation, and call fetch
 				$("#kresults").hide();
 				$("#k_loader").show();
