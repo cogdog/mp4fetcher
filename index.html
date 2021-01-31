@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <!-- site CSS -->
+    <link rel="stylesheet" href="style.css">
+
+
+	<!-- make title your own -->
+    <title>Kaltura MP4 Fetcher</title>
+  </head>
+  <body>
+  <!-- where the action happens -->
+  <div class="jumbotron">
+  <h1 id="metaphorical" class="display-4 text-center">Fetch Kaltura Info for H5P</h1>
+  <p class="text-center">Use this experimental tool to find the mp4 url as well as a thumbnail image for Kaltura hosed video content. This is designed for use in H5P authoring  (see <a href="https://kitchen.opened.ca/2020/08/04/switching-youtube-to-kaltura/" target="_blank">more details in the H5P/Pressbooks Kitchen</a>). 
+  </div>
+  
+	
+		<div id="main" class="container-fluid text-center">
+	
+			<div id="kenter" class="displayed">
+				<label for="klink">Kaltura URL</label>
+				<p>Enter the web address for the page that contains information about a Kaltura video</p>
+				<form>
+					<input type="text" id="klink" name="kurl" value="https://video.bccampus.ca/media/Chuck+Key+Video/0_2vhlqvue">
+				</form>
+		</div>
+		<div id="k_loader"><img src="loading.gif" alt="please wait"><br /><span id="loader_cap">LOOKING FOR VIDEO INFO</span></div>
+
+		<div id="kresults" class="displayed"></div>
+		<button type="button" class="btn btn-primary btn-lg" id="gimme">Get Me The Links</button>
+		
+		
+	</div><!-- #main -->
+	
+	
+	<div id="footer" class="container-fluid text-center">
+		This is an experimental tool designed to extract the mp4 video link for Kaltura hosted videos (it looks for open graph tags <code>og:video</code>) needed for use in H5P authoring. This serves as a replacement for <a href="https://docs.google.com/spreadsheets/d/14ySEWOF-wA--O5BkObP0mfimhsCkjpR6t7jYTFEOmuU/copy" target="_blank">the original Google Sheets version</a>. Sloppy quick code by <a href="http://cog.dog/"> @cogdog</a> and  <a href="https://github.com/cogdog/mp4fetcher">available for forking</a><br /><br />
+		<!-- background image attribution -->
+Image Credit: A cropped portion of <a href="https://pixabay.com/photos/vintage-tv-tv-old-transistor-1116587/" target="_blank">Pixabay image</a> by <a href="https://pixabay.com/users/makamuki0-1102736/">Marc Pascual</a> edited by Alan Levine to replace labels of theTV knobs.
+			<!-- code credit, thanks for keeping -->
+	</div>
+	
+	
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/2.0.4/jquery.backstretch.min.js"></script>
+    
+    <script>
+	// backstretch the background image to make this pretty
+	 $.backstretch("background.jpg");
+
+	
+	$(document).ready(function(){	
+	
+		function fetch_mp4_link ( kurl ) {
+		
+			fetch('https://cors-anywhere.herokuapp.com/' + kurl)
+				.then(function(response) {
+					// When the page is loaded convert it to text
+					return response.text()
+				})
+				.then(function(html) {
+					// Initialize the DOM parser
+					var parser = new DOMParser();
+
+					// Parse the text
+					var doc = parser.parseFromString(html, "text/html");
+
+					// select meta data tags							
+					title = doc.querySelector('meta[property~="og:title"][content]').content;
+					image = doc.querySelector('meta[property~="og:image"][content]').content;
+					video = doc.querySelector('meta[property~="og:video"][content]').content;
+
+					// load the results template
+					$("#kresults").html(get_template_html());
+					$("#ktitle").html('<a href="' + kurl + '" target="_blank">' + title + '</a>');
+					$("#kurl").val(video); 
+					$("#kposterdl").attr("href", image);
+					$("#kposter").attr("src", image + '.jpg');
+					$("#k_loader").hide();
+					$("#kresults").show();
+				
+				})
+				.catch(function(err) {  
+					$("#kresults").html('<h2>Error</h2><p>Something went wrong! <span style="color:red">' + err + '</span></p><p>Check that the web address entered <strong>' + $('#klink').val() + '</strong> is a valid link to the page for a Kaltura hosted video and that the video is publicly available. Not all Kaltura servers publish the open graph tags necessary for this to work. </p><p>This is quite experimental... Please <a href="https://github.com/cogdog/mp4fetcher/issues">report any other problems as an issue</a>.</p>');
+					$("#k_loader").hide();
+					$("#kresults").show();
+					console.log('Error on attempt to fetch: ', err);  
+				});	
+	
+			}
+
+			function get_template_html() {
+				// template for success results
+				return ('<form><h2>Results</h2> <p><strong>Video:</strong> <span id="ktitle"></span></p> <p><strong>MP4 address:</strong> Click to select web address, then copy, and use in H5P for video from "other source URL"</p> <input type="text" id="kurl" class="kres"><p><strong>Poster Image:</strong> Save to use as a poster image (right/command click, use "Save image as")</p> <img src="" id="kposter"></p></form>');
+
+			}
+
+			// prevent form submissions on return in text input fields
+			// h/t https://stackoverflow.com/a/5629827/2418186
+			$("form").bind("keypress", function(e) {
+				if (e.keyCode == 13) {
+					return false;
+				}
+			});
+
+			// make the results field one click selectable
+			$("#kresults input[type='text']").click( function () {
+			   $(this).select();
+			});
+
+			$( "#gimme" ).click(function() {
+				// hide results display, start the loader animation, and call fetch
+				$("#kresults").hide();
+				$("#k_loader").show();
+				fetch_mp4_link( $("#klink").val() );
+			});	
+			
+	});//ready
+
+	
+	</script>
+  </body>
+</html>

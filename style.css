@@ -1,0 +1,58 @@
+.jumbotron  {
+	opacity: 0.8;
+	margin-bottom:2em;
+	min-height: 2em;
+}
+
+.displayed {
+	background-color: #ffffffc7;
+	width: 80%;
+	margin:2em auto;
+	padding: 1em;
+
+}
+
+#kenter {
+	text-align:center;
+}
+
+#kresults  {
+	text-align:left;
+	display:none;
+}	
+
+#footer {
+	margin: 2rem 0 0;
+	padding: 1rem;
+	color: #fff;
+	width: 100%;
+	background-color: #111111c7;
+	font-size:0.8rem;
+	line-height:1.1;
+}	
+
+#footer a {
+	color:#e83e8c;
+}
+
+#klink, #kurl {
+	width:90%;
+	margin:0 0 2em;
+}
+
+label, h2 {
+	font-size: 2em;
+	font-weight: bold;
+	text-align:center;
+}
+
+#k_loader {
+	display:none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 300px;
+	padding: 2rem;
+	background-color: #ffffffc7;
+}
