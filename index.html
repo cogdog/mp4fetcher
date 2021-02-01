@@ -72,40 +72,72 @@ Image Credit: A cropped portion of <a href="https://pixabay.com/photos/vintage-t
 					return response.text()
 				})
 				.then(function(html) {
-					// Initialize the DOM parser
-					var parser = new DOMParser();
-
-					// Parse the text
-					var doc = parser.parseFromString(html, "text/html");
-
-					// select meta data tags							
-					title = doc.querySelector('meta[property~="og:title"][content]').content;
-					image = doc.querySelector('meta[property~="og:image"][content]').content;
-					video = doc.querySelector('meta[property~="og:video"][content]').content;
-
-					// load the results template
-					$("#kresults").html(get_template_html());
-					$("#ktitle").html('<a href="' + kurl + '" target="_blank">' + title + '</a>');
-					$("#kurl").val(video); 
-					$("#kposterdl").attr("href", image);
-					$("#kposter").attr("src", image + '.jpg');
-					$("#k_loader").hide();
-					$("#kresults").show();
-				
+					// send results to be checked
+					check_results(html);			
 				})
 				.catch(function(err) {  
-					$("#kresults").html('<h2>Error</h2><p>Something went wrong! <span style="color:red">' + err + '</span></p><p>Check that the web address entered <strong>' + $('#klink').val() + '</strong> is a valid link to the page for a Kaltura hosted video and that the video is publicly available. Not all Kaltura servers publish the open graph tags necessary for this to work. </p><p>This is quite experimental... Please <a href="https://github.com/cogdog/mp4fetcher/issues">report any other problems as an issue</a>.</p>');
-					$("#k_loader").hide();
-					$("#kresults").show();
-					console.log('Error on attempt to fetch: ', err);  
+					
+					report_error('Something went wrong! <span style="color:red">' + err + '</span></p><p>Check that the web address entered <strong>' + $('#klink').val() + '</strong> is a valid link to the page for a Kaltura hosted video and that the video is publicly available. Not all Kaltura servers publish the open graph tags necessary for this to work. </p><p>This is quite experimental... Please <a href="https://github.com/cogdog/mp4fetcher/issues">report any other problems as an issue</a>.</p>');
+					
 				});	
 	
 			}
+			
+			
+			function check_results(html) {
+			
+				// Initialize the DOM parser
+				var parser = new DOMParser();
+
+				// Parse the text
+				var doc = parser.parseFromString(html, "text/html");
+
+
+
+				// select meta data tags							
+				title = doc.querySelector('meta[property~="og:title"][content]');
+				image = doc.querySelector('meta[property~="og:image"][content]');
+				video = doc.querySelector('meta[property~="og:video"][content]');
+				
+
+				
+				// test for results, if all three, we have success (?)
+				if ( title && video && image) {
+
+					// load the results template
+					$("#kresults").html(get_template_html());
+					$("#ktitle").html('<a href="' + kurl + '" target="_blank">' + title.content + '</a>');
+					$("#kurl").val(video.content); 
+					$("#kposterdl").attr("href", image.content);
+					$("#kposter").attr("src", image.content + '.jpg');
+					$("#k_loader").hide();
+					$("#kresults").show();
+					
+				} else {
+				
+					// error
+					
+					report_error('Uh oh, errors occurred! <span style="color:red">Open graph data not found</span></p><p>Is this URL for a Kaltura video? Check the web address <strong>' + $('#klink').val() + '</strong> works as a link to the page for a Kaltura hosted video and that the video is publicly available. Not all Kaltura servers publish the open graph tags necessary for this to work. </p><p>This is quite experimental... Please <a href="https://github.com/cogdog/mp4fetcher/issues">report any other problems as an issue</a>.</p>');
+					
+				}
+				
+				return (true);
+
+			
+			}
+			
+			
 
 			function get_template_html() {
 				// template for success results
 				return ('<form><h2>Results</h2> <p><strong>Video:</strong> <span id="ktitle"></span></p> <p><strong>MP4 address:</strong> Click to select web address, then copy, and use in H5P for video from "other source URL"</p> <input type="text" id="kurl" class="kres" onClick="select()"><p><strong>Poster Image:</strong> Save to use as a poster image (right/command click, use "Save image as")</p> <img src="" id="kposter"></p></form>');
-
+			}
+			
+			
+			function report_error(msg_html) {
+				$("#kresults").html('<h2>Error</h2>' + msg_html);
+				$("#k_loader").hide();
+				$("#kresults").show();
 			}
 
 			// prevent form submissions on return in text input fields

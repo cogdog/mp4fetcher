@@ -23,6 +23,7 @@ Use this in H5P, e.g.
 
 # History
 
+* Feb 1 2021: Now it reports errors if a URL does not return the three expected open graph tags (e.g. if from a non Kaltura URL)
 * Jan 31 2021: Now available as a web version, it does not much for error checking.
 * Aug 4 2020: [First version created as Google Spreadsheet](https://kitchen.opened.ca/2020/08/04/switching-youtube-to-kaltura/)
 
